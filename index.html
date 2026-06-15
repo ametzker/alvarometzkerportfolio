@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="ALVAROMETZKER interactive 3D portfolio for video, DJ events, web projects, and contact."
+    />
+    <title>ALVAROMETZKER</title>
+  </head>
+  <body>
+    <main class="site-shell">
+      <section class="stage" id="stage" aria-label="Interactive portfolio desk">
+        <canvas id="scene-canvas"></canvas>
+
+        <div class="loader" id="loader" aria-live="polite">
+          <span class="loader__line"></span>
+          <span class="loader__text" id="loader-text">LOADING DESK</span>
+        </div>
+
+        <header class="landing" id="landing">
+          <p class="landing__eyebrow">Creative Professional</p>
+          <h1>ALVAROMETZKER</h1>
+          <div class="landing__disciplines" aria-label="Disciplines">
+            <span>Filmmaking</span>
+            <span>DJ &amp; Events</span>
+            <span>Digital Experiences</span>
+          </div>
+          <p class="landing__instruction">Select an object</p>
+        </header>
+
+        <div class="object-label" id="object-label" aria-hidden="true"></div>
+        <aside class="section-panel" id="section-panel" aria-live="polite"></aside>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
