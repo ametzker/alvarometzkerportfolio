@@ -503,8 +503,7 @@ function renderMediaItem(media, options) {
           muted
           loop
           playsinline
-          autoplay
-          preload="auto"
+          preload="metadata"
           disablepictureinpicture
           tabindex="-1"
           data-auto-video
@@ -542,15 +541,13 @@ function setupCurrentMedia() {
     mediaObserver = null;
   }
 
+  if (!hasEntered) return;
+
   const videos = Array.from(document.querySelectorAll("[data-auto-video]")).filter(isElementVisible);
   if (!videos.length) return;
 
-  videos.forEach((video) => {
-    video.dataset.loopingVisible = "true";
-    playLoopingVideo(video);
-  });
-
   if (!("IntersectionObserver" in window)) {
+    videos.forEach(playLoopingVideo);
     return;
   }
 
@@ -572,7 +569,10 @@ function setupCurrentMedia() {
     { threshold: [0, 0.2, 0.6] },
   );
 
-  videos.forEach((video) => mediaObserver.observe(video));
+  videos.forEach((video) => {
+    video.dataset.loopingVisible = "false";
+    mediaObserver.observe(video);
+  });
 }
 
 function scheduleMediaSetup() {
@@ -596,10 +596,12 @@ function playLoopingVideo(video) {
   video.loop = true;
   video.muted = true;
   video.playsInline = true;
+  video.preload = "auto";
   video.setAttribute("autoplay", "");
   video.setAttribute("loop", "");
   video.setAttribute("muted", "");
   video.setAttribute("playsinline", "");
+  video.setAttribute("preload", "auto");
 
   const primePreviewTime = () => {
     if (video.dataset.previewPrimed) return;
