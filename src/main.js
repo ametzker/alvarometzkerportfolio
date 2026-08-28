@@ -357,11 +357,15 @@ function getVisibleProjects() {
   const visibleProjects =
     activeFilter === "all"
       ? projects
-      : projects.filter((project) => project.category === activeFilter);
+      : projects.filter((project) => projectMatchesFilter(project, activeFilter));
 
   return [...visibleProjects].sort((firstProject, secondProject) => {
     return (firstProject.sortOrder ?? 999) - (secondProject.sortOrder ?? 999);
   });
+}
+
+function projectMatchesFilter(project, filterId) {
+  return [project.category, ...(project.secondaryCategories ?? [])].includes(filterId);
 }
 
 function getActiveProject() {

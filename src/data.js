@@ -51,6 +51,7 @@ export const projects = [
     sortOrder: 50,
     year: "2026",
     category: "commercial",
+    secondaryCategories: ["music"],
     displayCategory: "COMMERCIAL",
     client: "CODEC",
     location: "BARCELONA",
