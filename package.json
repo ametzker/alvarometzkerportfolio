@@ -1,5 +1,5 @@
 {
-  "name": "alvarometzker-3d-portfolio",
+  "name": "alvarometzker-minimal-portfolio",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -8,10 +8,6 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
     "check:visual": "node tests/visual-check.mjs"
-  },
-  "dependencies": {
-    "gsap": "^3.12.5",
-    "three": "^0.165.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.1",

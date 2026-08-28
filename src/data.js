@@ -1,170 +1,264 @@
-export const sectionInfo = {
-  sony: {
-    id: "video",
-    title: "VIDEO",
-    label: "VIDEO",
-    subtitle: "Filmmaking \u2022 Direction \u2022 Editing",
-    accent: "#4a90e2",
-  },
-  cdj: {
-    id: "events",
-    title: "DJ & EVENTS",
-    label: "DJ & EVENTS",
-    subtitle: "Music Curation \u2022 DJ Sets \u2022 Event Production",
-    accent: "#7b61ff",
-  },
-  macbook: {
-    id: "web",
-    title: "WEB PROJECTS",
-    label: "WEB PROJECTS",
-    subtitle: "Web Design \u2022 Prototypes \u2022 Digital Experiences",
-    accent: "#ffffff",
-  },
-  case: {
-    id: "contact",
-    title: "CONTACT",
-    label: "CONTACT",
-    subtitle: "Let\u2019s work together.",
-    accent: "#d8b16a",
-  },
+export const profile = {
+  name: "ALVARO METZKER",
+  location: "BARCELONA, ES",
+  period: "2024-2026",
+  title: "Creative direction, film, music and digital experiences.",
+  intro:
+    "Creative professional working across audiovisual production, underground music, events and web-based projects.",
+  availability:
+    "Available for freelance collaborations, creative direction, live events, fashion campaigns and digital work.",
+  disciplines: ["FILM", "COMMERCIAL", "CREATIVE DIRECTION", "MUSIC", "WEB"],
 };
 
-export const videoProjects = [
+export const filters = [
+  { id: "all", label: "ALL" },
+  { id: "film", label: "FILM" },
+  { id: "commercial", label: "COMMERCIAL" },
+  { id: "creative-direction", label: "CREATIVE DIRECTION" },
+  { id: "music", label: "MUSIC / EVENTS" },
+  { id: "web", label: "WEB" },
+];
+
+export const projects = [
   {
+    id: "cortical-dj-set",
     title: "CORTICAL DJ SET",
+    sortOrder: 60,
     year: "2026",
-    client: "Cortical",
+    category: "film",
+    displayCategory: "FILM",
+    client: "CORTICAL",
+    location: "RAZZMATAZZ, BARCELONA",
+    role: "CAMERA OPERATOR",
     description: "DJ set recording for Cortical at Razzmatazz.",
-    externalLink:
-      "https://www.instagram.com/reel/DWepcYYjsaQ/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    media: {
+      type: "video",
+      src: "/images/CORTICAL/Cortical.mp4",
+      mimeType: "video/mp4",
+      previewStart: 6,
+    },
     credits: ["Camera Operator"],
-  },
-  {
-    title: "SOPMOD V2 SPOT",
-    year: "2026",
-    client: "SOPMOD",
-    description: "Commercial spot with direction, camera operation and original music.",
-    externalLink:
-      "https://drive.google.com/file/d/1uwTGv8-rKmk9fh1kkWp3avW0N-UxmWxz/view?usp=share_link",
-    credits: ["Direction", "Camera Operator", "Music"],
-  },
-  {
-    title: "AKRILLA VISUALS",
-    year: "2026",
-    client: "Akrilla",
-    description: "Camera operator for Akrilla's concert at Apolo on June 6, 2026.",
-    credits: ["Camera Operator"],
-  },
-  {
-    title: "CARAMEL WEAR FW25",
-    year: "2025",
-    client: "Caramel Wear",
-    description: "FW25 campaign for Caramel Wear.",
     links: [
       {
-        label: "Welcome to the Cult",
-        url: "https://www.instagram.com/reel/DRNafc9DL5y/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+        label: "VIEW PROJECT",
+        url: "https://www.instagram.com/reel/DWepcYYjsaQ/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      },
+    ],
+  },
+  {
+    id: "sopmod-v2-spot",
+    title: "SOPMOD V2 SPOT",
+    sortOrder: 50,
+    year: "2026",
+    category: "commercial",
+    displayCategory: "COMMERCIAL",
+    client: "CODEC",
+    location: "BARCELONA",
+    role: "DIRECTION, CAMERA, MUSIC",
+    description: "Commercial spot with direction, camera operation and original music.",
+    media: {
+      type: "video",
+      src: "/images/SOPMOD/SOPMOD.mp4",
+      mimeType: "video/mp4",
+      previewStart: 4,
+    },
+    credits: ["Direction", "Camera Operator", "Music"],
+    links: [
+      {
+        label: "VIEW PROJECT",
+        url: "https://drive.google.com/file/d/1uwTGv8-rKmk9fh1kkWp3avW0N-UxmWxz/view?usp=share_link",
+      },
+    ],
+  },
+  {
+    id: "akrilla-visuals",
+    title: "AKRILLA VISUALS",
+    sortOrder: 20,
+    year: "2026",
+    category: "film",
+    displayCategory: "FILM",
+    client: "AKRILLA",
+    location: "APOLO, BARCELONA",
+    role: "CAMERA OPERATOR",
+    description: "Camera operator for Akrilla's concert at Apolo on June 6, 2026.",
+    media: {
+      type: "video",
+      src: "/images/AKRILLA%20APOLO/AkrillaApolo.mp4",
+      mimeType: "video/mp4",
+      previewStart: 1,
+    },
+    credits: ["Camera Operator"],
+  },
+  {
+    id: "caramel-wear-fw25",
+    title: "CARAMEL WEAR FW25",
+    sortOrder: 80,
+    year: "2025",
+    category: "commercial",
+    displayCategory: "FASHION FILM",
+    client: "CARAMEL WEAR",
+    location: "NATIONAL CAMPAIGN",
+    role: "ASSISTANT DIRECTOR, CAMERA",
+    description: "FW25 campaign films for Caramel Wear.",
+    media: [
+      {
+        type: "video",
+        src: "/images/CARAMEL/caramel1.mp4",
+        mimeType: "video/mp4",
+        previewStart: 2,
       },
       {
-        label: "Campaign Film 02",
-        url: "https://www.instagram.com/reel/DRklgkOjOIq/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-      },
-      {
-        label: "Campaign Film 03",
-        url: "https://www.instagram.com/reel/DSGCpwNDPRJ/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+        type: "video",
+        src: "/images/CARAMEL/caramel2.mp4",
+        mimeType: "video/mp4",
+        previewStart: 1,
       },
     ],
     credits: ["Assistant Director", "Camera Operator"],
+    links: [
+      {
+        label: "WELCOME TO THE CULT",
+        url: "https://www.instagram.com/reel/DRNafc9DL5y/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      },
+      {
+        label: "CAMPAIGN FILM 02",
+        url: "https://www.instagram.com/reel/DRklgkOjOIq/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      },
+      {
+        label: "CAMPAIGN FILM 03",
+        url: "https://www.instagram.com/reel/DSGCpwNDPRJ/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      },
+    ],
   },
   {
-    title: "ETHER KLUB",
-    year: "2025",
-    client: "Ether Klub",
-    description: "Underground electronic music club hosting events in Barcelona.",
-    externalLink:
-      "https://www.instagram.com/etherklub?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
-    credits: ["DOP"],
-  },
-  {
-    title: "PEBNOK CLUB",
-    year: "2024 - 2025",
-    client: "PEBNOK CLUB",
-    description: "Underground electronic music club hosting events in Barcelona.",
-    externalLink:
-      "https://www.instagram.com/pebnokclub?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
-    credits: ["DOP"],
-  },
-];
-
-export const eventProjects = [
-  {
-    eventName: "DOZEN RUNWAY",
+    id: "dozen-runway",
+    title: "DOZEN RUNWAY",
+    sortOrder: 30,
     year: "2026",
-    location: "Barcelona",
-    description:
-      "Student-led fashion runway presented by 12 international designers.",
-    externalLink:
-      "https://www.instagram.com/dozenrunway?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+    category: "music",
+    displayCategory: "RUNWAY / EVENTS",
+    client: "DOZEN RUNWAY",
+    location: "BARCELONA",
+    role: "VISUALS, MUSIC",
+    description: "Student-led fashion runway presented by 12 international designers.",
     credits: ["Visuals", "Music"],
+    links: [
+      {
+        label: "VIEW PROJECT",
+        url: "https://www.instagram.com/dozenrunway?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+      },
+    ],
   },
   {
-    eventName: "ETHER KLUB",
-    year: "2025",
-    location: "Barcelona",
+    id: "sonar",
+    title: "Sónar",
+    sortOrder: 10,
+    year: "2026",
+    category: "music",
+    displayCategory: "MUSIC / EVENTS",
+    client: "FITNESSS & RIUSFORZA",
+    location: "BARCELONA",
+    role: "AUDIOVISUAL MATERIAL",
+    description: "Audiovisual material for Sónar in Barcelona.",
+    media: {
+      type: "video",
+      src: "/images/SONAR/sonar.mp4",
+      mimeType: "video/mp4",
+      previewStart: 2,
+    },
+    credits: ["Audiovisual Material"],
+    links: [
+      {
+        label: "VIEW PROJECT",
+        url: "https://www.instagram.com/reel/Db3m_X9oTbf/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
+      },
+    ],
+  },
+  {
+    id: "ether-klub",
+    title: "ETHER KLUB",
+    sortOrder: 70,
+    year: "2025-2026",
+    category: "creative-direction",
+    displayCategory: "CREATIVE DIRECTION",
+    client: "ETHER KLUB",
+    location: "BARCELONA",
+    role: "CREATIVE DIRECTOR, PRODUCER, DOP",
     description: "Underground electronic music club hosting events in Barcelona.",
-    externalLink:
-      "https://www.instagram.com/etherklub?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
-    credits: ["Creative Director", "Producer"],
+    media: {
+      type: "video",
+      src: "/images/ETHER/EtherEdit.mp4",
+      mimeType: "video/mp4",
+      previewStart: 4,
+    },
+    credits: ["Creative Director", "Producer", "DOP"],
+    links: [
+      {
+        label: "VIEW PROJECT",
+        url: "https://www.instagram.com/etherklub?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+      },
+    ],
   },
   {
-    eventName: "PEBNOK CLUB",
-    year: "2024 - 2025",
-    location: "Barcelona",
+    id: "pebnok-club",
+    title: "PEBNOK CLUB",
+    sortOrder: 90,
+    year: "2024-2025",
+    category: "creative-direction",
+    displayCategory: "CREATIVE DIRECTION",
+    client: "PEBNOK CLUB",
+    location: "BARCELONA",
+    role: "CREATIVE DIRECTOR, PRODUCER, DOP",
     description: "Underground electronic music club hosting events in Barcelona.",
-    externalLink:
-      "https://www.instagram.com/pebnokclub?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
-    credits: ["Creative Director", "Producer"],
+    credits: ["Creative Director", "Producer", "DOP"],
+    links: [
+      {
+        label: "VIEW PROJECT",
+        url: "https://www.instagram.com/pebnokclub?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+      },
+    ],
   },
-];
-
-export const webProjects = [
   {
-    projectName: "Prometheus Rising",
-    shortDescription:
-      "Showroom website for Ken Nakajima's theatre/opera work Prometheus Rising.",
-    thumbnail: "/images/web-placeholder.svg",
-    liveUrl: "https://prometheusrising.vercel.app/",
+    id: "prometheus-rising",
+    title: "PROMETHEUS RISING",
+    sortOrder: 40,
+    year: "2026",
+    category: "web",
+    displayCategory: "WEB",
+    client: "ADA THEATRE LAB",
+    location: "ONLINE",
+    role: "CREATIVE DIRECTION, WEB DEVELOPMENT",
+    description: "Showroom website for Ken Nakajima's theatre and opera work Prometheus Rising.",
+    media: {
+      type: "video",
+      src: "/images/PROMETHEUS/prometheusrising.mp4",
+      mimeType: "video/mp4",
+      previewStart: 0,
+    },
     credits: ["Creative Direction", "Web Development"],
+    links: [
+      {
+        label: "OPEN LIVE URL",
+        url: "https://prometheusrising.vercel.app/",
+      },
+    ],
   },
 ];
 
-export const contactInfo = {
-  intro:
-    "Creative professional working across audiovisual production, music, events and digital experiences.",
-  availability:
-    "Available for freelance collaborations, creative direction, live events and digital projects.",
+export const contact = {
   email: {
-    label: "Email",
-    value: "ametzkeri@gmail.com",
+    label: "EMAIL",
+    value: "AMETZKERI@GMAIL.COM",
     url: "mailto:ametzkeri@gmail.com",
   },
   instagram: {
-    label: "Instagram",
-    value: "@alvarometzker",
+    label: "INSTAGRAM",
+    value: "@ALVAROMETZKER",
     url: "https://instagram.com/alvarometzker",
   },
-  linkedin: {
-    label: "LinkedIn",
-    value: "Álvaro Metzker",
-    url: "https://linkedin.com",
-  },
   whatsapp: {
-    label: "WhatsApp",
+    label: "WHATSAPP",
     value: "+34 666 754 040",
     url: "https://wa.me/34666754040",
-  },
-  cta: {
-    label: "LET\u2019S WORK TOGETHER",
-    url: "mailto:ametzkeri@gmail.com",
   },
 };

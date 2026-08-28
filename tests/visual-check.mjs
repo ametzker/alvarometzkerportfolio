@@ -3,8 +3,8 @@ import { chromium, devices } from "@playwright/test";
 const baseURL = process.env.TEST_URL ?? "http://127.0.0.1:5173";
 
 const viewports = [
-  { name: "desktop", viewport: { width: 1440, height: 960 }, object: "sony" },
-  { name: "mobile", viewport: devices["iPhone 14"].viewport, object: "macbook", isMobile: true },
+  { name: "desktop", viewport: { width: 1440, height: 960 } },
+  { name: "mobile", viewport: devices["iPhone 14"].viewport, isMobile: true },
 ];
 
 const browser = await chromium.launch();
@@ -16,69 +16,98 @@ for (const config of viewports) {
     hasTouch: Boolean(config.isMobile),
   });
 
-  page.on("pageerror", (error) => {
-    throw error;
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
   });
 
   await page.goto(baseURL, { waitUntil: "networkidle" });
-  await page.waitForFunction(() => Boolean(window.__portfolioDebug), null, { timeout: 20000 });
-  await page.waitForTimeout(600);
-
-  const pixels = await page.evaluate(() => {
-    const canvas = document.querySelector("canvas");
-    const context = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
-    const width = canvas.width;
-    const height = canvas.height;
-    const sampleWidth = Math.min(width, 320);
-    const sampleHeight = Math.min(height, 220);
-    const pixels = new Uint8Array(sampleWidth * sampleHeight * 4);
-    context.readPixels(
-      Math.floor((width - sampleWidth) / 2),
-      Math.floor((height - sampleHeight) / 2),
-      sampleWidth,
-      sampleHeight,
-      context.RGBA,
-      context.UNSIGNED_BYTE,
-      pixels,
-    );
-
-    let lit = 0;
-    for (let i = 0; i < pixels.length; i += 4) {
-      if (pixels[i] + pixels[i + 1] + pixels[i + 2] > 24) lit += 1;
-    }
-
-    return {
-      lit,
-      total: pixels.length / 4,
-      width,
-      height,
-    };
+  await page.waitForSelector("[data-enter-site]", { timeout: 10000 });
+  await page.click("[data-enter-site]");
+  await page.waitForFunction(() => !document.querySelector("[data-entry-gate]"), null, {
+    timeout: 2000,
   });
+  await page.waitForSelector(config.isMobile ? ".feed-card" : ".project-row", { timeout: 10000 });
 
-  if (pixels.width < config.viewport.width || pixels.height < config.viewport.height) {
-    throw new Error(`${config.name}: canvas backing store is smaller than expected`);
+  const initialReport = await page.evaluate(() => ({
+    title: document.querySelector("h1")?.textContent,
+    rows: document.querySelectorAll(".project-row").length,
+    feedCards: document.querySelectorAll(".feed-card").length,
+    hasGalleryButton: Boolean(document.querySelector('[data-view="gallery"]')),
+    hasCanvas: Boolean(document.querySelector("canvas")),
+    visibleVideos: Array.from(document.querySelectorAll("[data-auto-video]")).filter(
+      (video) => video.getClientRects().length && video.offsetWidth && video.offsetHeight,
+    ).length,
+    overflowX: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+  }));
+
+  if (initialReport.title !== "ALVARO METZKER") {
+    throw new Error(`${config.name}: portfolio title did not render`);
   }
 
-  if (pixels.lit / pixels.total < 0.03) {
-    throw new Error(`${config.name}: canvas appears blank`);
+  if (initialReport.rows < 4) {
+    throw new Error(`${config.name}: project index rendered too few rows`);
   }
 
-  const position = await page.evaluate((objectName) => {
-    return window.__portfolioDebug.getObjectScreenPosition(objectName);
-  }, config.object);
-
-  if (!position || position.x < 0 || position.y < 0) {
-    throw new Error(`${config.name}: ${config.object} was not projected into the viewport`);
+  if (initialReport.feedCards < 4) {
+    throw new Error(`${config.name}: mobile feed rendered too few cards`);
   }
 
-  if (config.isMobile) {
-    await page.touchscreen.tap(position.x, position.y);
-  } else {
-    await page.mouse.move(position.x, position.y);
-    await page.mouse.click(position.x, position.y);
+  if (initialReport.hasGalleryButton) {
+    throw new Error(`${config.name}: gallery tab is still present`);
   }
 
-  await page.waitForSelector(".section-panel.is-visible", { timeout: 5000 });
+  if (initialReport.hasCanvas) {
+    throw new Error(`${config.name}: legacy 3D canvas is still present`);
+  }
+
+  if (initialReport.visibleVideos < 1) {
+    throw new Error(`${config.name}: no visible autoplay media rendered`);
+  }
+
+  if (initialReport.overflowX) {
+    throw new Error(`${config.name}: page has horizontal overflow`);
+  }
+
+  await page.click('[data-filter="commercial"]');
+  if (!config.isMobile) {
+    await page.click('[data-project-id="sopmod-v2-spot"]');
+  }
+  await page.click("[data-theme-toggle]");
+
+  const interactionReport = await page.evaluate(() => ({
+    activeTitle: document.querySelector(".detail-heading h2")?.textContent,
+    firstFeedTitle: document.querySelector(".feed-card h2")?.textContent,
+    activeFilter: document.querySelector('[data-filter="commercial"]')?.getAttribute("aria-pressed"),
+    theme: document.documentElement.dataset.theme,
+    overflowX: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+  }));
+
+  const renderedCommercialTitle = config.isMobile
+    ? interactionReport.firstFeedTitle
+    : interactionReport.activeTitle;
+
+  if (renderedCommercialTitle !== "SOPMOD V2 SPOT") {
+    throw new Error(`${config.name}: selected project detail did not update`);
+  }
+
+  if (interactionReport.activeFilter !== "true") {
+    throw new Error(`${config.name}: active filter state did not update`);
+  }
+
+  if (interactionReport.theme !== "dark") {
+    throw new Error(`${config.name}: theme toggle did not switch to dark mode`);
+  }
+
+  if (interactionReport.overflowX) {
+    throw new Error(`${config.name}: interaction created horizontal overflow`);
+  }
+
+  if (errors.length) {
+    throw new Error(`${config.name}: ${errors.join("; ")}`);
+  }
+
   await page.close();
 }
 
