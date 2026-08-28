@@ -503,7 +503,9 @@ function renderMediaItem(media, options) {
           muted
           loop
           playsinline
-          preload="metadata"
+          autoplay
+          preload="auto"
+          poster="${getVideoPosterSrc(media.src)}"
           disablepictureinpicture
           tabindex="-1"
           data-auto-video
@@ -526,6 +528,10 @@ function renderMediaItem(media, options) {
   return "";
 }
 
+function getVideoPosterSrc(src) {
+  return src.replace(/\.mp4($|\?)/i, ".jpg$1");
+}
+
 function normalizeMedia(media) {
   if (!media) return [];
   return Array.isArray(media) ? media : [media];
@@ -541,13 +547,15 @@ function setupCurrentMedia() {
     mediaObserver = null;
   }
 
-  if (!hasEntered) return;
-
   const videos = Array.from(document.querySelectorAll("[data-auto-video]")).filter(isElementVisible);
   if (!videos.length) return;
 
+  videos.forEach((video) => {
+    video.dataset.loopingVisible = "true";
+    playLoopingVideo(video);
+  });
+
   if (!("IntersectionObserver" in window)) {
-    videos.forEach(playLoopingVideo);
     return;
   }
 
@@ -570,7 +578,6 @@ function setupCurrentMedia() {
   );
 
   videos.forEach((video) => {
-    video.dataset.loopingVisible = "false";
     mediaObserver.observe(video);
   });
 }
