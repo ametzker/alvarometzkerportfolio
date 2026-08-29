@@ -159,15 +159,15 @@ export const projects = [
     displayCategory: "FILM",
     client: "FITNESSS & RIUSFORZA",
     location: "BARCELONA",
-    role: "AUDIOVISUAL MATERIAL",
-    description: "Audiovisual material for Sónar in Barcelona.",
+    role: "CAMERA OPERATOR",
+    description: "Camera operator for FITNESSS & RIUSFORZA's Kenosis show at Sónar.",
     media: {
       type: "video",
       src: "/images/SONAR/sonar.mp4",
       mimeType: "video/mp4",
       previewStart: 2,
     },
-    credits: ["Audiovisual Material"],
+    credits: ["Camera Operator"],
     links: [
       {
         label: "VIEW PROJECT",
