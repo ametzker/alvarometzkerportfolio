@@ -141,7 +141,8 @@ export const projects = [
     client: "DOZEN RUNWAY",
     location: "BARCELONA",
     role: "VISUALS, MUSIC",
-    description: "Student-led fashion runway presented by 12 international designers.",
+    description:
+      "Visuals and music for a student-led fashion runway presented by 12 international designers.",
     credits: ["Visuals", "Music"],
     links: [
       {
