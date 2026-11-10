@@ -64,12 +64,6 @@ export const projects = [
       previewStart: 4,
     },
     credits: ["Direction", "Camera Operator", "Music"],
-    links: [
-      {
-        label: "VIEW PROJECT",
-        url: "https://drive.google.com/file/d/1uwTGv8-rKmk9fh1kkWp3avW0N-UxmWxz/view?usp=share_link",
-      },
-    ],
   },
   {
     id: "akrilla-visuals",
@@ -248,6 +242,11 @@ export const projects = [
 ];
 
 export const contact = {
+  linkedin: {
+    label: "LINKEDIN",
+    value: "ÁLVARO METZKER",
+    url: "https://www.linkedin.com/in/álvaro-metzker-389971411/",
+  },
   email: {
     label: "EMAIL",
     value: "AMETZKERI@GMAIL.COM",
