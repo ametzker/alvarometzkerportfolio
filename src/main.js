@@ -180,24 +180,55 @@ function renderWorkView() {
   `;
 }
 
+let activePhoto = 0;
+
 function renderPhotography() {
   return `
     <section class="photography" id="photography" aria-labelledby="photography-title">
       <div class="photography__heading">
-        <p class="section-label">STILLS / PERSONAL WORK</p>
-        <h2 id="photography-title">PHOTOGRAPHY</h2>
+        <div><p class="section-label">STILLS / PERSONAL WORK</p>
+        <h2 id="photography-title">PHOTOGRAPHY</h2></div>
+        <p class="section-label">${String(photography.length).padStart(2, "0")} PHOTOGRAPHS</p>
       </div>
-      ${photography.length ? `<div class="photography__grid">${photography.map((photo) => `
+      <div class="photography__grid">${photography.map((photo, index) => `
         <figure>
-          <img src="${photo.src}" alt="${photo.alt}" loading="lazy" />
-          ${photo.caption ? `<figcaption>${photo.caption}</figcaption>` : ""}
-        </figure>`).join("")}</div>` : '<p class="photography__empty">A selection of photographs. Coming soon.</p>'}
+          <button class="photography__open" type="button" data-photo="${index}" aria-label="Enlarge photograph ${index + 1}">
+            <img src="${photo.src}" srcset="${photo.small} 1200w, ${photo.src} 2400w"
+              sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1440px) calc(100vw - 96px), 1344px"
+              width="${photo.width}" height="${photo.height}" alt="${photo.alt}" loading="lazy" decoding="async" />
+          </button>
+          <figcaption><span>${String(index + 1).padStart(2, "0")} / ${String(photography.length).padStart(2, "0")}</span><span>VIEW FULL SIZE ↗</span></figcaption>
+        </figure>`).join("")}</div>
     </section>
+    <dialog class="photo-viewer" aria-label="Photography viewer">
+      <div class="photo-viewer__bar"><span data-photo-count aria-live="polite"></span><button type="button" data-photo-close autofocus>CLOSE ×</button></div>
+      <img data-photo-image alt="" />
+      <div class="photo-viewer__navigation"><button type="button" data-photo-step="-1">← PREVIOUS</button><button type="button" data-photo-step="1">NEXT →</button></div>
+    </dialog>
   `;
+}
+
+function showPhoto(index) {
+  activePhoto = (index + photography.length) % photography.length;
+  const photo = photography[activePhoto];
+  const dialog = document.querySelector(".photo-viewer");
+  const image = dialog.querySelector("[data-photo-image]");
+  image.src = photo.src;
+  image.alt = photo.alt;
+  dialog.querySelector("[data-photo-count]").textContent = `${String(activePhoto + 1).padStart(2, "0")} / ${String(photography.length).padStart(2, "0")}`;
+  if (!dialog.open) dialog.showModal();
 }
 
 function bindEvents() {
   app.addEventListener("click", (event) => {
+    const photoButton = event.target.closest("[data-photo]");
+    if (photoButton) { showPhoto(Number(photoButton.dataset.photo)); return; }
+    if (event.target.closest("[data-photo-close]")) {
+      document.querySelector(".photo-viewer").close(); return;
+    }
+    const photoStep = event.target.closest("[data-photo-step]");
+    if (photoStep) { showPhoto(activePhoto + Number(photoStep.dataset.photoStep)); return; }
+
     const enterButton = event.target.closest("[data-enter-site]");
     if (enterButton) {
       enterPortfolio();
@@ -226,6 +257,12 @@ function bindEvents() {
   });
 
   app.addEventListener("keydown", (event) => {
+    if (document.querySelector(".photo-viewer")?.open && ["ArrowLeft", "ArrowRight"].includes(event.key)) {
+      event.preventDefault();
+      showPhoto(activePhoto + (event.key === "ArrowRight" ? 1 : -1));
+      return;
+    }
+
     const enterTarget = event.target.closest("[data-enter-site]");
     if (!enterTarget || !["Enter", " "].includes(event.key)) return;
 

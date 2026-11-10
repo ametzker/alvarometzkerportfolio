@@ -266,4 +266,20 @@ export const contact = {
 };
 
 // Add images from public/photography using /photography/filename.jpg URLs.
-export const photography = [];
+export const photography = [
+  "Playing fields and houses seen through a window at an angle",
+  "Gothic arches and stained glass in a dimly lit church",
+  "Ivy branches covering an old stone window",
+  "A riverside building surrounded by trees",
+  "Open fields beneath a pale sky",
+  "An acoustic guitar by a window with a warm light in the foreground",
+  "Close-up of a guitar against a frosted window",
+  "Slate rooftops and arched windows in blue evening light",
+  "A chimney silhouetted through a textured window",
+].map((alt, index) => ({
+  src: `/photography/web/${index + 1}-2400.jpg`,
+  small: `/photography/web/${index + 1}-1200.jpg`,
+  alt,
+  width: index === 7 ? 7895 : 7980,
+  height: index === 7 ? 3340 : 3376,
+}));
