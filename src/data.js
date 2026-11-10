@@ -147,6 +147,7 @@ export const projects = [
   },
   {
     id: "sonar",
+    avatar: "S",
     title: "Sónar",
     sortOrder: 10,
     year: "2026",

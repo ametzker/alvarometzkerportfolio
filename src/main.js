@@ -245,7 +245,6 @@ function enterPortfolio() {
 
   window.setTimeout(() => {
     gate?.remove();
-    setupCurrentMedia();
   }, 520);
 }
 
@@ -319,7 +318,7 @@ function renderProjectCards(visibleProjects) {
       (project, index) => `
         <article class="feed-card">
           <header class="feed-card__header">
-            <span class="feed-card__avatar" aria-hidden="true">${getInitials(project.client)}</span>
+            <span class="feed-card__avatar" aria-hidden="true">${project.avatar ?? getInitials(project.client)}</span>
             <div class="feed-card__title">
               <h2>${project.title}</h2>
               <p>${project.client} / ${project.year}</p>
@@ -425,6 +424,8 @@ function setupCurrentMedia() {
     mediaObserver = null;
   }
 
+  if (!hasEntered) return;
+
   const videos = Array.from(document.querySelectorAll("[data-auto-video]")).filter(isElementVisible);
   if (!videos.length) return;
 
@@ -433,9 +434,15 @@ function setupCurrentMedia() {
     return;
   }
 
+  // Start visible previews within the entry click, preserving user activation.
   videos.forEach((video) => {
-    video.dataset.loopingVisible = "false";
-    video.pause();
+    const rect = video.getBoundingClientRect();
+    const visibleWidth = Math.max(0, Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0));
+    const visibleHeight = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
+    const visible = visibleWidth * visibleHeight >= rect.width * rect.height * 0.2;
+    video.dataset.loopingVisible = String(visible);
+    if (visible) playLoopingVideo(video);
+    else video.pause();
   });
 
   mediaObserver = new IntersectionObserver(
