@@ -186,18 +186,15 @@ function renderPhotography() {
   return `
     <section class="photography" id="photography" aria-labelledby="photography-title">
       <div class="photography__heading">
-        <div><p class="section-label">STILLS / PERSONAL WORK</p>
-        <h2 id="photography-title">PHOTOGRAPHY</h2></div>
-        <p class="section-label">${String(photography.length).padStart(2, "0")} PHOTOGRAPHS</p>
+        <h2 id="photography-title">PHOTOGRAPHY</h2>
       </div>
       <div class="photography__grid">${photography.map((photo, index) => `
         <figure>
           <button class="photography__open" type="button" data-photo="${index}" aria-label="Enlarge photograph ${index + 1}">
             <img src="${photo.src}" srcset="${photo.small} 1200w, ${photo.src} 2400w"
-              sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1440px) calc(100vw - 96px), 1344px"
+              sizes="(max-width: 760px) calc(100vw - 48px), 720px"
               width="${photo.width}" height="${photo.height}" alt="${photo.alt}" loading="lazy" decoding="async" />
           </button>
-          <figcaption><span>${String(index + 1).padStart(2, "0")} / ${String(photography.length).padStart(2, "0")}</span><span>VIEW FULL SIZE ↗</span></figcaption>
         </figure>`).join("")}</div>
     </section>
     <dialog class="photo-viewer" aria-label="Photography viewer">
