@@ -28,7 +28,7 @@ for (const config of viewports) {
   await page.waitForFunction(() => !document.querySelector("[data-entry-gate]"), null, {
     timeout: 2000,
   });
-  await page.waitForSelector(config.isMobile ? ".feed-card" : ".project-row", { timeout: 10000 });
+  await page.waitForSelector(".feed-card", { timeout: 10000 });
 
   const initialReport = await page.evaluate(() => ({
     title: document.querySelector("h1")?.textContent,
@@ -46,8 +46,8 @@ for (const config of viewports) {
     throw new Error(`${config.name}: portfolio title did not render`);
   }
 
-  if (initialReport.rows < 4) {
-    throw new Error(`${config.name}: project index rendered too few rows`);
+  if (initialReport.rows !== 0) {
+    throw new Error(`${config.name}: legacy project index is still present`);
   }
 
   if (initialReport.feedCards < 4) {
@@ -71,9 +71,6 @@ for (const config of viewports) {
   }
 
   await page.click('[data-filter="commercial"]');
-  if (!config.isMobile) {
-    await page.click('[data-project-id="sopmod-v2-spot"]');
-  }
   await page.click("[data-theme-toggle]");
 
   const interactionReport = await page.evaluate(() => ({
@@ -84,9 +81,7 @@ for (const config of viewports) {
     overflowX: document.documentElement.scrollWidth > document.documentElement.clientWidth,
   }));
 
-  const renderedCommercialTitle = config.isMobile
-    ? interactionReport.firstFeedTitle
-    : interactionReport.activeTitle;
+  const renderedCommercialTitle = interactionReport.firstFeedTitle;
 
   if (renderedCommercialTitle !== "SOPMOD V2 SPOT") {
     throw new Error(`${config.name}: selected project detail did not update`);
@@ -108,6 +103,19 @@ for (const config of viewports) {
     throw new Error(`${config.name}: ${errors.join("; ")}`);
   }
 
+  if (await page.locator('.feed-card').first().locator('.detail-links').count()) {
+    throw new Error(`${config.name}: SOPMOD still has a project link`);
+  }
+  await page.screenshot({ path: `/tmp/portfolio-${config.name}.png` });
+  await page.locator('a[data-scroll-target="photography"]').click();
+  await page.waitForFunction(() => {
+    const top = document.querySelector('#photography').getBoundingClientRect().top;
+    return top >= 0 && top < 150;
+  });
+  await page.locator('#photography-title').waitFor({ state: 'visible' });
+  if (!(await page.locator('a[href*="linkedin.com/in/"]').count())) {
+    throw new Error(`${config.name}: LinkedIn is missing`);
+  }
   await page.close();
 }
 

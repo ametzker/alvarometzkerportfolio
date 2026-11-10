@@ -1,6 +1,6 @@
 import "./styles.css";
 
-import { contact, filters, profile, projects } from "./data.js";
+import { contact, filters, profile, projects, photography } from "./data.js";
 
 const app = document.querySelector("#app");
 
@@ -11,13 +11,9 @@ if ("scrollRestoration" in window.history) {
 clearInitialHash();
 
 let activeFilter = "all";
-let activeProjectId = getVisibleProjects()[0]?.id ?? projects[0]?.id;
 let hasEntered = false;
-let projectHoverReady = false;
-let projectHoverBlockedUntil = 0;
 let mediaObserver = null;
 let resizeFrame = 0;
-const hoverQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
 const initialScrollResetDuration = 2800;
 let initialScrollResetFrame = 0;
 let initialScrollResetUntil = 0;
@@ -36,7 +32,6 @@ window.addEventListener("load", startInitialScrollReset);
 window.addEventListener("pageshow", startInitialScrollReset);
 window.addEventListener("beforeunload", resetScrollPosition);
 window.addEventListener("resize", scheduleMediaSetup, { passive: true });
-window.addEventListener("pointermove", enableProjectHover, { passive: true });
 
 function startInitialScrollReset() {
   initialScrollResetUntil = Math.max(
@@ -113,6 +108,7 @@ function render() {
         </nav>
         <div class="header-actions">
           <button class="text-button" type="button" data-theme-toggle>LIGHTS OFF</button>
+          <a href="#photography" data-scroll-target="photography">PHOTOGRAPHY</a>
           <a href="#about" data-scroll-target="about">ABOUT</a>
           <a href="#contact" data-scroll-target="contact">CONTACT</a>
           <span>${profile.period}</span>
@@ -120,6 +116,7 @@ function render() {
       </header>
 
       ${renderWorkView()}
+      ${renderPhotography()}
 
       <section class="about" id="about" aria-labelledby="about-title">
         <div>
@@ -176,24 +173,25 @@ function renderWorkView() {
     </section>
 
     <section class="work" aria-label="Selected work">
-      <aside class="work-detail" data-project-detail>
-        ${renderProjectDetail(getActiveProject())}
-      </aside>
-      <div class="work-index">
-        <div class="index-grid index-grid--head" aria-hidden="true">
-          <span>TITLE</span>
-          <span>CLIENT</span>
-          <span>ROLE</span>
-          <span>TYPE</span>
-          <span>YEAR</span>
-        </div>
-        <div class="project-list" data-project-list>
-          ${renderProjectRows(visibleProjects)}
-        </div>
+      <div class="project-feed" aria-label="Selected work feed">
+        ${renderProjectCards(visibleProjects)}
       </div>
-      <div class="mobile-feed" data-mobile-feed aria-label="Selected work feed">
-        ${renderMobileProjectCards(visibleProjects)}
+    </section>
+  `;
+}
+
+function renderPhotography() {
+  return `
+    <section class="photography" id="photography" aria-labelledby="photography-title">
+      <div class="photography__heading">
+        <p class="section-label">STILLS / PERSONAL WORK</p>
+        <h2 id="photography-title">PHOTOGRAPHY</h2>
       </div>
+      ${photography.length ? `<div class="photography__grid">${photography.map((photo) => `
+        <figure>
+          <img src="${photo.src}" alt="${photo.alt}" loading="lazy" />
+          ${photo.caption ? `<figcaption>${photo.caption}</figcaption>` : ""}
+        </figure>`).join("")}</div>` : '<p class="photography__empty">A selection of photographs. Coming soon.</p>'}
     </section>
   `;
 }
@@ -212,12 +210,6 @@ function bindEvents() {
       return;
     }
 
-    const projectButton = event.target.closest("[data-project-id]");
-    if (projectButton) {
-      setActiveProject(projectButton.dataset.projectId);
-      return;
-    }
-
     const anchorLink = event.target.closest("[data-scroll-target]");
     if (anchorLink) {
       event.preventDefault();
@@ -230,20 +222,6 @@ function bindEvents() {
       document.documentElement.dataset.theme =
         document.documentElement.dataset.theme === "dark" ? "light" : "dark";
       syncThemeButton();
-    }
-  });
-
-  app.addEventListener("pointerover", (event) => {
-    const projectButton = event.target.closest("[data-project-id]");
-    if (projectButton && hoverQuery.matches && projectHoverReady) {
-      setActiveProject(projectButton.dataset.projectId, { preserveFocus: true });
-    }
-  });
-
-  app.addEventListener("focusin", (event) => {
-    const projectButton = event.target.closest("[data-project-id]");
-    if (projectButton) {
-      setActiveProject(projectButton.dataset.projectId, { preserveFocus: true });
     }
   });
 
@@ -260,8 +238,6 @@ function enterPortfolio() {
   if (hasEntered) return;
 
   hasEntered = true;
-  projectHoverReady = false;
-  projectHoverBlockedUntil = window.performance.now() + 350;
   document.documentElement.dataset.entered = "true";
   const gate = document.querySelector("[data-entry-gate]");
   gate?.classList.add("is-exiting");
@@ -271,12 +247,6 @@ function enterPortfolio() {
     gate?.remove();
     setupCurrentMedia();
   }, 520);
-}
-
-function enableProjectHover() {
-  if (!hasEntered || window.performance.now() < projectHoverBlockedUntil) return;
-
-  projectHoverReady = true;
 }
 
 function scrollToSection(sectionId) {
@@ -295,12 +265,6 @@ function scrollToSection(sectionId) {
 
 function setFilter(nextFilter) {
   activeFilter = nextFilter;
-  const visibleProjects = getVisibleProjects();
-
-  if (!visibleProjects.some((project) => project.id === activeProjectId)) {
-    activeProjectId = visibleProjects[0]?.id ?? projects[0].id;
-  }
-
   refreshView({ resetScroll: true });
 }
 
@@ -312,37 +276,6 @@ function refreshView({ resetScroll = false } = {}) {
   if (resetScroll) {
     window.requestAnimationFrame(resetScrollPosition);
   }
-}
-
-function setActiveProject(projectId, options = {}) {
-  if (activeProjectId === projectId) {
-    playActiveMedia();
-    return;
-  }
-
-  activeProjectId = projectId;
-  updateDetail();
-  updateActiveRows();
-
-  if (!options.preserveFocus) {
-    document.querySelector(`[data-project-id="${projectId}"]`)?.focus({ preventScroll: true });
-  }
-}
-
-function updateDetail() {
-  const detail = document.querySelector("[data-project-detail]");
-  if (!detail) return;
-
-  detail.innerHTML = renderProjectDetail(getActiveProject());
-  setupCurrentMedia();
-}
-
-function updateActiveRows() {
-  document.querySelectorAll("[data-project-id]").forEach((button) => {
-    const isActive = button.dataset.projectId === activeProjectId;
-    button.classList.toggle("is-active", isActive);
-    button.setAttribute("aria-current", isActive ? "true" : "false");
-  });
 }
 
 function syncThemeButton() {
@@ -368,10 +301,6 @@ function projectMatchesFilter(project, filterId) {
   return [project.category, ...(project.secondaryCategories ?? [])].includes(filterId);
 }
 
-function getActiveProject() {
-  return projects.find((project) => project.id === activeProjectId) ?? projects[0];
-}
-
 function renderFilterButton(filter) {
   const isActive = filter.id === activeFilter;
   return `
@@ -384,30 +313,7 @@ function renderFilterButton(filter) {
   `;
 }
 
-function renderProjectRows(visibleProjects) {
-  return visibleProjects
-    .map((project) => {
-      const isActive = project.id === activeProjectId;
-
-      return `
-        <button
-          class="project-row index-grid ${isActive ? "is-active" : ""}"
-          type="button"
-          data-project-id="${project.id}"
-          aria-current="${isActive ? "true" : "false"}"
-        >
-          <span>${project.title}</span>
-          <span>${project.client}</span>
-          <span>${project.role}</span>
-          <span>${project.displayCategory}</span>
-          <span>${project.year}</span>
-        </button>
-      `;
-    })
-    .join("");
-}
-
-function renderMobileProjectCards(visibleProjects) {
+function renderProjectCards(visibleProjects) {
   return visibleProjects
     .map(
       (project, index) => `
@@ -440,34 +346,6 @@ function renderMobileProjectCards(visibleProjects) {
       `,
     )
     .join("");
-}
-
-function renderProjectDetail(project) {
-  return `
-    <p class="section-label">${project.displayCategory}</p>
-    <div class="detail-heading">
-      <h2>${project.title}</h2>
-      <p>${project.year}</p>
-    </div>
-    ${renderMediaSet(project.media, project.title, "detail")}
-    <dl class="detail-meta">
-      <div>
-        <dt>CLIENT</dt>
-        <dd>${project.client}</dd>
-      </div>
-      <div>
-        <dt>LOCATION</dt>
-        <dd>${project.location}</dd>
-      </div>
-      <div>
-        <dt>ROLE</dt>
-        <dd>${project.role}</dd>
-      </div>
-    </dl>
-    <p class="detail-copy">${project.description}</p>
-    ${renderCreditLine(project.credits)}
-    ${renderProjectLinks(project.links)}
-  `;
 }
 
 function renderMediaSet(media, title, context) {
@@ -507,8 +385,7 @@ function renderMediaItem(media, options) {
           muted
           loop
           playsinline
-          autoplay
-          preload="auto"
+          preload="metadata"
           poster="${getVideoPosterSrc(media.src)}"
           disablepictureinpicture
           tabindex="-1"
@@ -541,10 +418,6 @@ function normalizeMedia(media) {
   return Array.isArray(media) ? media : [media];
 }
 
-function playActiveMedia() {
-  document.querySelectorAll("[data-project-detail] .looping-video").forEach(playLoopingVideo);
-}
-
 function setupCurrentMedia() {
   if (mediaObserver) {
     mediaObserver.disconnect();
@@ -554,14 +427,15 @@ function setupCurrentMedia() {
   const videos = Array.from(document.querySelectorAll("[data-auto-video]")).filter(isElementVisible);
   if (!videos.length) return;
 
-  videos.forEach((video) => {
-    video.dataset.loopingVisible = "true";
-    playLoopingVideo(video);
-  });
-
   if (!("IntersectionObserver" in window)) {
+    videos.forEach(playLoopingVideo);
     return;
   }
+
+  videos.forEach((video) => {
+    video.dataset.loopingVisible = "false";
+    video.pause();
+  });
 
   mediaObserver = new IntersectionObserver(
     (entries) => {

@@ -831,3 +831,80 @@ a {
     border-right: 0;
   }
 }
+
+/* A single, scrollable feed at every screen size. */
+.project-feed {
+  display: grid;
+  gap: 36px;
+  width: min(100%, 720px);
+  margin-inline: auto;
+}
+
+.work {
+  display: block;
+  min-height: 0;
+  padding: 32px 24px 80px;
+}
+
+.intro {
+  display: block;
+  width: min(100%, 768px);
+  min-height: 0;
+  margin-inline: auto;
+  border: 0;
+}
+
+.intro__identity {
+  gap: 18px;
+  padding: 48px 24px 16px;
+  border: 0;
+}
+
+.filter-nav { gap: 22px; }
+.header-actions { gap: 22px; }
+.feed-card { border: 1px solid var(--line); }
+.feed-card__header { padding: 16px; }
+.feed-card__body { padding: 20px; gap: 16px; }
+.feed-card__caption { line-height: 1.55; }
+.feed-card__caption strong { display: block; margin-bottom: 6px; }
+.feed-card__meta { border: 0; gap: 20px; }
+.feed-card__meta div { border: 0; padding: 0; }
+.feed-card__media-set { scrollbar-width: thin; }
+.feed-card__media-set::-webkit-scrollbar { display: block; height: 5px; }
+.feed-card__media-set::-webkit-scrollbar-thumb { background: var(--muted); }
+
+.photography {
+  padding: 64px max(24px, calc((100% - 720px) / 2));
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 90px;
+}
+.photography h2 { margin: 18px 0 32px; font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 500; }
+.photography__empty { margin: 0 0 32px; color: var(--muted); font-size: 0.9rem; }
+.photography__grid { display: grid; gap: 32px; }
+.photography figure { margin: 0; }
+.photography img { display: block; width: 100%; height: auto; }
+.photography figcaption { margin-top: 12px; color: var(--muted); font-size: 0.78rem; }
+
+@media (min-width: 761px) {
+  .about, .contact {
+    max-width: 768px;
+    margin-inline: auto;
+    grid-template-columns: 1fr;
+    min-height: 0;
+    padding-block: 32px;
+  }
+  .about > *, .contact > * { border: 0; padding: 16px 24px; }
+  .about > p, .contact > p { max-width: 60ch; }
+  .about__blank { display: none; }
+  .contact-links { padding: 16px 24px; }
+  .contact a { min-height: 100px; }
+}
+
+@media (max-width: 760px) {
+  .work { padding: 0; }
+  .project-feed { gap: 16px; }
+  .intro__identity { padding: 20px 12px; }
+  .feed-card { border-inline: 0; }
+  .feed-card__header, .feed-card__body { padding: 12px; }
+  .photography { padding: 40px 12px; }
+}

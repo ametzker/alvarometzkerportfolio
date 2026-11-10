@@ -263,3 +263,6 @@ export const contact = {
     url: "https://wa.me/34666754040",
   },
 };
+
+// Add images from public/photography using /photography/filename.jpg URLs.
+export const photography = [];
