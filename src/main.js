@@ -379,7 +379,8 @@ function renderMediaSet(media, title, context) {
 function renderMediaItem(media, options) {
   if (media.type === "video") {
     return `
-      <figure class="${options.figureClass}" aria-label="${options.label}">
+      <figure class="${options.figureClass} video-preview" aria-label="${options.label}">
+        <img class="video-preview__poster" src="${getVideoPosterSrc(media.src)}" alt="" aria-hidden="true" />
         <video
           class="${options.videoClass} looping-video"
           muted
@@ -474,76 +475,46 @@ function isElementVisible(element) {
 }
 
 function playLoopingVideo(video) {
-  video.dataset.loopingVisible = "true";
-  video.autoplay = true;
-  video.controls = false;
-  video.defaultMuted = true;
-  video.loop = true;
+  if (video.dataset.loopingVisible === "false") return;
+
   video.muted = true;
+  video.defaultMuted = true;
   video.playsInline = true;
+  video.loop = true;
   video.preload = "auto";
-  video.setAttribute("autoplay", "");
-  video.setAttribute("loop", "");
-  video.setAttribute("muted", "");
-  video.setAttribute("playsinline", "");
-  video.setAttribute("preload", "auto");
-
-  const primePreviewTime = () => {
-    if (video.dataset.previewPrimed) return;
-
-    const previewStart = Number(video.dataset.previewStart || 0);
-    if (!previewStart) {
-      video.dataset.previewPrimed = "true";
-      return;
-    }
-
-    const maxStartTime = Number.isFinite(video.duration)
-      ? Math.max(0, video.duration - 0.2)
-      : previewStart;
-
-    try {
-      video.currentTime = Math.min(previewStart, maxStartTime);
-    } catch {
-      // Some browsers reject currentTime changes before enough video data is buffered.
-    }
-
-    video.dataset.previewPrimed = "true";
-  };
 
   if (!video.dataset.loopingPrepared) {
-    video.addEventListener("pause", () => {
-      if (
-        !video.ended &&
-        document.visibilityState === "visible" &&
-        video.dataset.loopingVisible !== "false"
-      ) {
-        window.setTimeout(() => playLoopingVideo(video), 80);
+    const primePreview = () => {
+      if (video.dataset.previewPrimed) return;
+      const start = Number(video.dataset.previewStart || 0);
+      try {
+        if (start) video.currentTime = Math.min(start, Math.max(0, video.duration - 0.2));
+        video.dataset.previewPrimed = "true";
+      } catch {
+        // Keep the poster visible while the browser prepares the media.
       }
+    };
+    video.addEventListener("loadedmetadata", primePreview);
+    if (video.readyState >= HTMLMediaElement.HAVE_METADATA) primePreview();
+    video.addEventListener("playing", () => {
+      if (video.dataset.loopingVisible === "false") {
+        video.pause();
+        return;
+      }
+      video.closest(".video-preview")?.classList.add("is-playing");
     });
+    for (const event of ["pause", "error", "waiting", "emptied"]) {
+      video.addEventListener(event, () => {
+        video.closest(".video-preview")?.classList.remove("is-playing");
+      });
+    }
     video.dataset.loopingPrepared = "true";
   }
 
-  const requestPlay = () => {
-    if (document.visibilityState === "hidden" || video.dataset.loopingVisible === "false") return;
-
-    if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
-      primePreviewTime();
-    }
-
-    const playRequest = video.play();
-
-    if (playRequest?.catch) {
-      playRequest.catch(() => {});
-    }
-  };
-
-  if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-    requestPlay();
-  } else {
-    video.addEventListener("loadedmetadata", primePreviewTime, { once: true });
-    video.addEventListener("loadeddata", requestPlay, { once: true });
-    video.addEventListener("canplay", requestPlay, { once: true });
-  }
+  // Calling play immediately starts loading even when metadata preloading is deferred.
+  video.play()?.catch(() => {
+    video.closest(".video-preview")?.classList.remove("is-playing");
+  });
 }
 
 function renderCreditLine(credits = []) {
