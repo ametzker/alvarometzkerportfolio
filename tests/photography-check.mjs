@@ -8,7 +8,16 @@ try {
     await page.goto('http://127.0.0.1:5173/',{waitUntil:'domcontentloaded'});
     await page.locator('[data-enter-site]').click();
     await page.locator('[data-entry-gate]').waitFor({state:'detached'});
-    await page.locator('[data-scroll-target="photography"]').click();
+    await page.locator('[data-filter="photography"]').click();
+    await expect(page.locator('.feed-card')).toHaveCount(0);
+    for (const filter of ['film', 'commercial', 'creative-direction', 'music', 'web']) {
+      await page.locator(`[data-filter="${filter}"]`).click();
+      await expect(page.locator('#photography')).toHaveCount(0);
+    }
+    await page.locator('[data-filter="all"]').click();
+    await expect(page.locator('#photography')).toHaveCount(1);
+    await expect(page.locator('.feed-card')).toHaveCount(9);
+    await page.locator('[data-filter="photography"]').click();
     const photos=page.locator('.photography__open img');
     await expect(photos).toHaveCount(9);
     for (const photo of await photos.all()) {

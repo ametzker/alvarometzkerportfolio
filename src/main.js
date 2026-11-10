@@ -108,15 +108,14 @@ function render() {
         </nav>
         <div class="header-actions">
           <button class="text-button" type="button" data-theme-toggle>LIGHTS OFF</button>
-          <a href="#photography" data-scroll-target="photography">PHOTOGRAPHY</a>
           <a href="#about" data-scroll-target="about">ABOUT</a>
           <a href="#contact" data-scroll-target="contact">CONTACT</a>
           <span>${profile.period}</span>
         </div>
       </header>
 
-      ${renderWorkView()}
-      ${renderPhotography()}
+      ${activeFilter !== "photography" ? renderWorkView() : ""}
+      ${["all", "photography"].includes(activeFilter) ? renderPhotography() : ""}
 
       <section class="about" id="about" aria-labelledby="about-title">
         <div>

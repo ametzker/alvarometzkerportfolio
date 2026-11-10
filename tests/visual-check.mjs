@@ -107,7 +107,7 @@ for (const config of viewports) {
     throw new Error(`${config.name}: SOPMOD still has a project link`);
   }
   await page.screenshot({ path: `/tmp/portfolio-${config.name}.png` });
-  await page.locator('a[data-scroll-target="photography"]').click();
+  await page.locator('[data-filter="photography"]').click();
   await page.waitForFunction(() => {
     const top = document.querySelector('#photography').getBoundingClientRect().top;
     return top >= 0 && top < 150;

@@ -17,6 +17,7 @@ export const filters = [
   { id: "creative-direction", label: "CREATIVE DIRECTION" },
   { id: "music", label: "MUSIC / EVENTS" },
   { id: "web", label: "WEB" },
+  { id: "photography", label: "PHOTOGRAPHY" },
 ];
 
 export const projects = [
